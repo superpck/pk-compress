@@ -1,0 +1,33 @@
+[package]
+name = "pk-compress"
+version = "0.1.0"
+description = "PK Compress - Cross-platform file compression tool"
+authors = ["SuperPCK"]
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/[your-username]/pk-compress"
+keywords = ["compression", "zip", "encryption", "tauri"]
+
+[dependencies]
+# ZIP compression/decompression with AES-256 encryption (Pure Rust only)
+zip = { version = "2.1", features = ["aes-crypto", "deflate"], default-features = false }
+# Recursive directory walking
+walkdir = "2"
+# Tauri framework
+tauri = { version = "2.0", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[build-dependencies]
+tauri-build = { version = "2.0", features = [] }
+
+[dev-dependencies]
+tempfile = "3"
+
+# Optimize for size in release builds
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

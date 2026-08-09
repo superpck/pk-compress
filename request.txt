@@ -1,0 +1,31 @@
+[Context & Project Overview]
+- I am developing a File Compression/Decompression application.
+- Architecture: Tauri (v2) with Angular (Frontend utilizing HTML/CSS/TypeScript and Lazy Loading) and Rust (Backend handling file processing).
+- File Purpose: Generate the backend core logic in Rust focused on compression and decompression.
+
+[Technical Constraints & Requirements]
+1. 100% Pure Rust for ZIP: All ZIP compression/decompression operations must be written in pure Rust (e.g., using `zip` and `walkdir` crates). No C-dependencies or external bindings allowed for ZIP, ensuring seamless cross-compilation to Windows, iOS, and Android.
+2. Multi-file & Folder Structure: Must support recursive reading and archiving of folders containing multiple files and subdirectories while preserving the original relative path structures.
+3. Security/Password: Support password protection and decryption using high-security AES-256 encryption (`with_aes_encryption`).
+4. External RAR Handling: Prepare a placeholder/separate structure for future External Bundle / Binding integration to handle .rar (RAR5) decompression due to licensing restrictions.
+
+---
+
+[Tasks for Copilot]
+
+Task 1: Cargo.toml Configuration
+- Provide the required dependencies and features (e.g., `zip` with `aes-crypto` and `deflate` enabled, `walkdir`, and `tauri`) to maintain a 100% Pure Rust stack.
+
+Task 2: ZIP Compression Module (compress_zip.rs)
+- Create a function named `compress_folder_with_password` that accepts `src_dir`, `dst_zip`, and `password` as Strings.
+- Recursively read all files/folders and encrypt them using AES-256.
+
+Task 3: ZIP Decompression Module (decompress_zip.rs)
+- Create a function named `decompress_zip_with_password` that accepts `src_zip`, `dst_dir`, and `password` as Strings.
+- Verify the password, extract files, and reconstruct the folder layout. Return proper errors for invalid passwords or corrupted archives.
+
+Task 4: Tauri Command Bridge (main.rs)
+- Create `#[tauri::command]` handlers to bridge the Angular frontend with the Rust backend.
+- Accept parameters from the frontend and register them properly using `tauri::Builder::default().invoke_handler(...)`.
+
+Ensure Clean Architecture by decoupling files and use proper Rust Error Handling (Result) that easily bubbles status responses back to the frontend.
