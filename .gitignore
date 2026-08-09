@@ -9,15 +9,15 @@ Thumbs.db
 /tmp
 
 # Rust
-/target
+target/
 Cargo.lock
 **/*.rs.bk
 
 # Tauri
-/dist
 /src-tauri/target
 
-# Build outputs
+# Build outputs (actual compiled binaries)
+# Note: /dist contains our frontend source code (HTML/CSS/JS), NOT build output
 *.dmg
 *.app
 *.exe
@@ -35,7 +35,7 @@ yarn-error.log*
 
 # Angular
 .angular/
-dist/
+# dist/ - NOT ignored in this project (contains frontend source)
 tmp/
 out-tsc/
 bazel-out/

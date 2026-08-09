@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PK Compress</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 512 512">
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="512" height="512" rx="80" fill="url(#gradient)"/>
+                    <path d="M160 200 L160 280 L200 280 L200 200 M220 280 L220 200 L280 200 L280 240 L220 240" stroke="white" stroke-width="20" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="420" cy="420" r="60" fill="white"/>
+                    <text x="420" y="435" font-family="Arial" font-size="40" font-weight="bold" fill="url(#gradient)" text-anchor="middle" dominant-baseline="middle">PK</text>
+                </svg>
+                <h1>PK Compress</h1>
+            </div>
+            <p class="tagline">Secure file compression with AES-256 encryption</p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Mode Selection -->
+            <div class="mode-selector">
+                <button class="mode-btn active" data-mode="compress">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14m7-7H5"/>
+                    </svg>
+                    Compress
+                </button>
+                <button class="mode-btn" data-mode="decompress">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4m14-7l-5-5-5 5m5-5v12"/>
+                    </svg>
+                    Decompress
+                </button>
+            </div>
+
+            <!-- Compress Mode -->
+            <div class="mode-content" id="compress-mode">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Compress Files</h2>
+                        <p>Select a folder or files to compress with password protection</p>
+                    </div>
+                    
+                    <div class="drop-zone" id="compress-drop-zone">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+                            <path d="M12 11v6m-3-3l3-3 3 3"/>
+                        </svg>
+                        <h3>Drop folder or files here</h3>
+                        <p>or</p>
+                        <button class="btn-secondary" onclick="selectFolder('compress')">Select Folder</button>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="compress-password">Password (required)</label>
+                        <div class="password-input">
+                            <input type="password" id="compress-password" placeholder="Enter strong password">
+                            <button class="toggle-password" onclick="togglePassword('compress-password')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="compress-output">Output File</label>
+                        <div class="file-input">
+                            <input type="text" id="compress-output" placeholder="compressed-archive.zip" readonly>
+                            <button class="btn-secondary" onclick="selectOutput()">Browse</button>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" onclick="compress()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4m4-5l5-5 5 5m-5-5v12"/>
+                        </svg>
+                        Compress Files
+                    </button>
+                </div>
+            </div>
+
+            <!-- Decompress Mode -->
+            <div class="mode-content hidden" id="decompress-mode">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Decompress Files</h2>
+                        <p>Select a ZIP archive to extract</p>
+                    </div>
+                    
+                    <div class="drop-zone" id="decompress-drop-zone">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/>
+                            <polyline points="13 2 13 9 20 9"/>
+                        </svg>
+                        <h3>Drop ZIP file here</h3>
+                        <p>or</p>
+                        <button class="btn-secondary" onclick="selectFile('decompress')">Select ZIP File</button>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="decompress-password">Password</label>
+                        <div class="password-input">
+                            <input type="password" id="decompress-password" placeholder="Enter password if encrypted">
+                            <button class="toggle-password" onclick="togglePassword('decompress-password')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="decompress-output">Output Folder</label>
+                        <div class="file-input">
+                            <input type="text" id="decompress-output" placeholder="extracted-files/" readonly>
+                            <button class="btn-secondary" onclick="selectFolder('decompress-output')">Browse</button>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" onclick="decompress()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4m14-7l-5-5-5 5m5-5v12"/>
+                        </svg>
+                        Extract Files
+                    </button>
+                </div>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress-container hidden" id="progress-container">
+                <div class="card">
+                    <h3 id="progress-title">Processing...</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <p id="progress-text">Starting...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>PK Compress v0.1.0 | MIT License | 
+                <a href="https://github.com/superpck/pk-compress" target="_blank">GitHub</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
