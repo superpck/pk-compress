@@ -1,6 +1,5 @@
-// Tauri API
-const { invoke } = window.__TAURI__.core;
-const { open } = window.__TAURI__.dialog;
+// Initialize when DOM is ready
+let invoke, open;
 
 // Global state
 let selectedFiles = {
@@ -8,8 +7,17 @@ let selectedFiles = {
     decompress: null
 };
 
+// Initialize Tauri API when ready
+function initializeTauriAPI() {
+    if (window.__TAURI__) {
+        invoke = window.__TAURI__.core.invoke;
+        open = window.__TAURI__.dialog.open;
+    }
+}
+
 // Mode switching
-document.querySelectorAll('.mode-btn').forEach(btn => {
+function setupModeSwitch() {
+    document.querySelectorAll('.mode-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const mode = btn.dataset.mode;
         
@@ -23,7 +31,8 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
         });
         document.getElementById(`${mode}-mode`).classList.remove('hidden');
     });
-});
+    });
+}
 
 // Drag and drop handlers
 function setupDropZone(dropZoneId, mode) {
@@ -67,9 +76,7 @@ function handleFileSelect(path, mode, dropZone) {
     dropZone.querySelector('p').textContent = path;
 }
 
-// Initialize drop zones
-setupDropZone('compress-drop-zone', 'compress');
-setupDropZone('decompress-drop-zone', 'decompress');
+
 
 // File/Folder selection
 async function selectFolder(mode) {
@@ -129,31 +136,23 @@ async function selectOutput() {
     }
 }
 
-// Password visibility toggle
-function togglePassword(inputId) {
-    const input = document.getElementById(inputId);
-    input.type = input.type === 'password' ? 'text' : 'password';
+async function selectOutputFolder() {
+    try {
+        const selected = await open({
+            directory: true,
+            multiple: false,
+            title: 'Select Output Folder'
+        });
+        
+        if (selected) {
+            document.getElementById('decompress-output').value = selected;
+        }
+    } catch (error) {
+        showToast('Failed to select folder: ' + error, 'error');
+    }
 }
-
-// Compress function
-async function compress() {
-    const src = selectedFiles.compress;
-    const password = document.getElementById('compress-password').value;
-    let dst = document.getElementById('compress-output').value;
-    
-    // Validation
-    if (!src) {
-        showToast('Please select a folder or files to compress', 'warning');
-        return;
-    }
-    
-    if (!password) {
-        showToast('Password is required for compression', 'warning');
-        return;
-    }
-    
-    if (password.length < 6) {
-        showToast('Password should be at least 6 characters', 'warning');
+    if (password && password.length < 6) {
+        showToast('Password should be at least 6 characters if provided', 'warning');
         return;
     }
     
@@ -296,31 +295,46 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
-// Keyboard shortcuts
-document.addEventListener('keydown', (e) => {
-    // Ctrl/Cmd + O to select files
-    if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
-        e.preventDefault();
-        const activeMode = document.querySelector('.mode-btn.active').dataset.mode;
-        if (activeMode === 'compress') {
-            selectFolder('compress');
-        } else {
-            selectFile('decompress');
+// Keyboard shortcuts setup
+function setupKeyboardShortcuts() {
+    document.addEventListener('keydown', (e) => {
+        // Ctrl/Cmd + O to select files
+        if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+            e.preventDefault();
+            const activeMode = document.querySelector('.mode-btn.active').dataset.mode;
+            if (activeMode === 'compress') {
+                selectFolder('compress');
+            } else {
+                selectFile('decompress');
+            }
         }
-    }
-    
-    // Ctrl/Cmd + Enter to process
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault();
-        const activeMode = document.querySelector('.mode-btn.active').dataset.mode;
-        if (activeMode === 'compress') {
-            compress();
-        } else {
-            decompress();
+        
+        // Ctrl/Cmd + Enter to process
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            const activeMode = document.querySelector('.mode-btn.active').dataset.mode;
+            if (activeMode === 'compress') {
+                compress();
+            } else {
+                decompress();
+            }
         }
-    }
-});
+    });
+}
 
-// Initialize
-console.log('PK Compress initialized');
-showToast('Welcome to PK Compress! 👋', 'success');
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
+
+function init() {
+    initializeTauriAPI();
+    setupModeSwitch();
+    setupDropZone('compress-drop-zone', 'compress');
+    setupDropZone('decompress-drop-zone', 'decompress');
+    setupKeyboardShortcuts();
+    console.log('PK Compress initialized');
+    showToast('Welcome to PK Compress! 👋', 'success');
+}

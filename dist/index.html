@@ -65,7 +65,7 @@
                     </div>
 
                     <div class="input-group">
-                        <label for="compress-password">Password (required)</label>
+                        <label for="compress-password">Password (optional)</label>
                         <div class="password-input">
                             <input type="password" id="compress-password" placeholder="Enter strong password">
                             <button class="toggle-password" onclick="togglePassword('compress-password')">
@@ -80,7 +80,7 @@
                     <div class="input-group">
                         <label for="compress-output">Output File</label>
                         <div class="file-input">
-                            <input type="text" id="compress-output" placeholder="compressed-archive.zip" readonly>
+                            <input type="text" id="compress-output" placeholder="compressed-archive.zip">
                             <button class="btn-secondary" onclick="selectOutput()">Browse</button>
                         </div>
                     </div>
@@ -128,8 +128,8 @@
                     <div class="input-group">
                         <label for="decompress-output">Output Folder</label>
                         <div class="file-input">
-                            <input type="text" id="decompress-output" placeholder="extracted-files/" readonly>
-                            <button class="btn-secondary" onclick="selectFolder('decompress-output')">Browse</button>
+                            <input type="text" id="decompress-output" placeholder="extracted-files/">
+                            <button class="btn-secondary" onclick="selectOutputFolder()">Browse</button>
                         </div>
                     </div>
 
